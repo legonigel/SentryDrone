@@ -1,6 +1,5 @@
 import urllib2
 import json
-import sqs
 
 def lambda_handler(event, context):
     if (event["session"]["application"]["applicationId"] !=
@@ -92,7 +91,7 @@ def count():
 def land(intent):
     session_attributes = {}
     card_title = "Sentry Landing"
-    speech_output = "Fuck" 
+    speech_output = "Fuck" \
                     "Please try again."
     reprompt_text = "Error " 
     should_end_session = False
