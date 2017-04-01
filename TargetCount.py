@@ -25,9 +25,6 @@ def pushToBucket(count):
     k.set_contents_from_string(str(count))
     
     print "Bucket info: " + k.get_contents_as_string()
-    
-
-#cv2.namedWindow('frame')
 
 cam = cv2.VideoCapture('tcp://192.168.1.1:5555')
 
