@@ -24,7 +24,7 @@ def pushToBucket(count):
     
     k.set_contents_from_string(str(count))
     
-    print "Bucket info: " + k.get_contents_as_string()
+    #print "Bucket info: " + k.get_contents_as_string()
 
 cam = cv2.VideoCapture('tcp://192.168.1.1:5555')
 
@@ -44,9 +44,9 @@ while(True):
         continue
     
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
+    
     prevgray = gray
-
+    
     Gaussianframe=cv2.GaussianBlur(frame,(5,5),0)
     
     #convert to HSV from BGR
@@ -70,12 +70,12 @@ while(True):
     mask = cv2.dilate(mask, None, iterations=5)
     
     res = cv2.bitwise_and(Gaussianframe,Gaussianframe, mask =mask)
-
+    
     cnts = cv2.findContours(mask, cv2.RETR_EXTERNAL,
         cv2.CHAIN_APPROX_SIMPLE)[-2]
         
     center = None
- 
+    
     for c in cnts:
         if len(c) > 3:
             ((x, y), radius) = cv2.minEnclosingCircle(c)
@@ -88,12 +88,12 @@ while(True):
                 cv2.circle(Gaussianframe, (int(x), int(y)), int(radius),(0, 255, 255), 2)
                 cv2.circle(Gaussianframe, center, 1, (0, 0, 255), -1)
     
+    #print "trying to push to bucket..."
     pushToBucket(len(obj))
-    
     cv2.imshow('image', res)
     cv2.imshow('blobs', Gaussianframe)
-    
-    k = cv2.waitKey(5) & 0xFF
+    #time.sleep(.1)
+    k = cv2.waitKey(1) & 0xFF
     if k == 27:
         print "Quitting...!"
         break
