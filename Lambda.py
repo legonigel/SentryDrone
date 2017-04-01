@@ -91,7 +91,7 @@ def count():
     session_attributes = {}
     card_title = "Sentry Count"
     reprompt_text = ""
-    sent_to_q("count")
+    sent_to_q("count")
     should_end_session = False
 
     speech_output = "There are " + read_q() + " objects "
@@ -101,7 +101,7 @@ def count():
 def error():
     session_attributes = {}
     card_title = "Error"
-    reprompt_text = ""
+    reprompt_text = ""
     sent_to_q("error")
     should_end_session = False
 
