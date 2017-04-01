@@ -40,6 +40,8 @@ def on_intent(intent_request, session):
 
     if intent_name == "liftoff":
         return liftoff()
+    elif intent_name == "target":
+        return target()
     elif intent_name == "count":
         return count()
     elif intent_name == "land":
@@ -73,12 +75,13 @@ def get_welcome_response():
     should_end_session = False
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
-
+#"There are people trying to benefit you and then there are people trying to put it in your butt"
+#       -Raz 2017
 def liftoff():
     session_attributes = {}
     card_title = "Lift off!"
     reprompt_text = ""
-    sent_to_q("liftoff")
+    sent_to_q("takeoff")
     should_end_session = False
    
     
@@ -124,6 +127,18 @@ def land(intent):
         card_title, speech_output, reprompt_text, should_end_session))
 
 
+def target(intent):
+    session_attributes = {}
+    card_title = "Searching for Target"
+    speech_output = "Is the target in view? idk I'm just a robot who works for the cia"
+    
+    reprompt_text = ""
+    sent_to_q("target")
+    should_end_session = False
+
+    return build_response(session_attributes, build_speechlet_response(
+        card_title, speech_output, reprompt_text, should_end_session))
+
 
 def build_speechlet_response(title, output, reprompt_text, should_end_session):
     return {
@@ -132,9 +147,13 @@ def build_speechlet_response(title, output, reprompt_text, should_end_session):
             "text": output
         },
         "card": {
-            "type": "Simple",
+            "type": "Standard",
             "title": title,
-            "content": output
+            "content": output,
+            "image": {
+                "smallImageUrl": "https://carfu.com/resources/card-images/race-car-small.png",
+                "largeImageUrl": "https://carfu.com/resources/card-images/race-car-large.png"
+          }
         },
         "reprompt": {
             "outputSpeech": {
