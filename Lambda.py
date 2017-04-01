@@ -42,6 +42,8 @@ def on_intent(intent_request, session):
         return liftoff()
     elif intent_name == "target":
         return target()
+    elif intent_name == "position":
+        return position()
     elif intent_name == "count":
         return count()
     elif intent_name == "land":
@@ -60,18 +62,18 @@ def on_session_ended(session_ended_request, session):
     # Cleanup goes here...
 
 def handle_session_end_request():
-    card_title = "Sentry - Thanks"
-    speech_output = "Thank you for using Sentry.  See you next time!"
+    card_title = "AirLexa - Thanks"
+    speech_output = "Thank you for using AirLexa.  See you next time!"
     should_end_session = True
 
     return build_response({}, build_speechlet_response(card_title, speech_output, None, should_end_session))
 
 def get_welcome_response():
     session_attributes = {}
-    card_title = "Sentry"
-    speech_output = "Welcome to Sentry. " \
-                    "You can ask me to take off, land, or count. " 
-    reprompt_text = "Please ask me to take off, land, or count. " 
+    card_title = "AirLexa"
+    speech_output = "Welcome to AirLexa. " \
+                    "You can ask me to take off, land, find target, or count. " 
+    reprompt_text = "Please ask me to take off, land, find target, or count. " 
     should_end_session = False
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
@@ -85,14 +87,14 @@ def liftoff():
     should_end_session = False
    
     
-    speech_output = "T minus 5 seconds to lift off "
+    speech_output = "T minus 5 seconds to lift off"
 
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
 
 def count():
     session_attributes = {}
-    card_title = "Sentry Count"
+    card_title = "AirLexa Count"
     reprompt_text = ""
     sent_to_q("count")
     should_end_session = False
@@ -105,7 +107,6 @@ def error():
     session_attributes = {}
     card_title = "Error"
     reprompt_text = ""
-    sent_to_q("error")
     should_end_session = False
 
     speech_output = "Please try again"
@@ -116,24 +117,30 @@ def error():
 
 def land(intent):
     session_attributes = {}
-    card_title = "Sentry Landing"
-    speech_output = "Fuck" \
-                    "Please try again."
+    card_title = "AirLexa Landing"
+    speech_output = "Landing now"
     reprompt_text = ""
     sent_to_q("land")
     should_end_session = False
 
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
-
-
-def target(intent):
+        
+def target():
     session_attributes = {}
-    card_title = "Searching for Target"
-    speech_output = "Is the target in view? idk I'm just a robot who works for the cia"
-    
+    card_title = "AirLexa Target"
+    speech_output = "Seeking Target...Target Found"
     reprompt_text = ""
-    sent_to_q("target")
+    should_end_session = False
+
+    return build_response(session_attributes, build_speechlet_response(
+        card_title, speech_output, reprompt_text, should_end_session))
+        
+def position():
+    session_attributes = {}
+    card_title = "Sentry Target"
+    speech_output = "Seeking Target...Target Found"
+    reprompt_text = ""
     should_end_session = False
 
     return build_response(session_attributes, build_speechlet_response(
@@ -169,4 +176,4 @@ def build_response(session_attributes, speechlet_response):
         "version": "1.0",
         "sessionAttributes": session_attributes,
         "response": speechlet_response
-    }
+}
