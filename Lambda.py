@@ -1,6 +1,10 @@
 #import urllib2
 import json
 import boto3
+#start added
+import boto
+from boto.s3.key import Key
+#end added
 
 def lambda_handler(event, context):
     
@@ -17,10 +21,20 @@ def lambda_handler(event, context):
         return on_intent(event["request"], event["session"])
     elif event["request"]["type"] == "SessionEndedRequest":
         return on_session_ended(event["request"], event["session"])
-def sent_to_q(message)
+def sent_to_q(message):
     sqs = boto3.resource('sqs')
     queue = sqs.get_queue_by_name(QueueName='DroneQueue')
     response = queue.send_message(MessageBody = message)
+
+#start added
+def read_q():
+    c = boto.connect_s3()
+    b = c.get_bucket('cokecount')
+    k = Key(b)
+    k.key = 'count'
+    
+    return k.get_contents_as_string()
+#end added
 
 def on_session_started(session_started_request, session):
     print "Starting new session."
@@ -94,6 +108,9 @@ def count():
     #bart_elevator_status = json.load(response) 
 
     speech_output = "Sentry beginning to count"
+    #start added
+    speech_output = read_q()
+    #end added
 
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
