@@ -2,12 +2,8 @@
 import json
 import boto3
 
-#field
-sqs = boto3.resource('sqs')
-queue = sqs.get_queue_by_name(QueueName='DroneQueue')
-
 def lambda_handler(event, context):
-
+    
     if (event["session"]["application"]["applicationId"] !=
             "amzn1.ask.skill.c1a86732-9d3c-4d4e-84ed-fac474aea839"):
         raise ValueError("Invalid Application ID")
@@ -21,6 +17,10 @@ def lambda_handler(event, context):
         return on_intent(event["request"], event["session"])
     elif event["request"]["type"] == "SessionEndedRequest":
         return on_session_ended(event["request"], event["session"])
+def sent_to_q(message)
+    sqs = boto3.resource('sqs')
+    queue = sqs.get_queue_by_name(QueueName='DroneQueue')
+    response = queue.send_message(MessageBody = message)
 
 def on_session_started(session_started_request, session):
     print "Starting new session."
@@ -72,7 +72,7 @@ def liftoff():
     session_attributes = {}
     card_title = "Lift off!"
     reprompt_text = ""
-    response = queue.send_message(MessageBody="Lift off")
+    sent_to_q("liftoff")
     should_end_session = False
 
    #response = urllib2.urlopen(API_BASE + "/status")
@@ -87,7 +87,7 @@ def count():
     session_attributes = {}
     card_title = "Sentry Count"
     reprompt_text = ""
-    response = queue.send_message(MessageBody="Count"))
+    sent_to_q("count")
     should_end_session = False
 
     #response = urllib2.urlopen(API_BASE + "/elevatorstatus")
@@ -101,7 +101,7 @@ def error():
     session_attributes = {}
     card_title = "Error"
     reprompt_text = ""
-    response = queue.send_message(MessageBody="Error")
+    sent_to_q("error")
     should_end_session = False
 
     #response = urllib2.urlopen(API_BASE + "/elevatorstatus")
@@ -119,7 +119,7 @@ def land(intent):
     speech_output = "Fuck" \
                     "Please try again."
     reprompt_text = ""
-    response = queue.send_message(MessageBody="land")
+    sent_to_q("land")
     should_end_session = False
 
     return build_response(session_attributes, build_speechlet_response(
