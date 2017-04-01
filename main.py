@@ -4,6 +4,7 @@ import boto3
 def main():
 	sqs = boto3.resource('sqs', region_name="us-east-1")
 	q = sqs.get_queue_by_name(QueueName="DroneQueue")
+	q.purge()
 		
 
 	drone = lib.libardrone.ARDrone(True)
