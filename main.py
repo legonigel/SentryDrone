@@ -8,6 +8,7 @@ def main():
 		
 
 	drone = lib.libardrone.ARDrone(True)
+	print "Connected to Drone"
 	done = False
 	try:
 		while not done:
