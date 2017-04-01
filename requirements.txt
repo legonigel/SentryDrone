@@ -1,2 +1,3 @@
 numpy
 awscli
+opencv-python
