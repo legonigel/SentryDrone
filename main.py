@@ -8,14 +8,17 @@ def main():
 
 	drone = lib.libardrone.ARDrone(True)
 	done = False
-	while not done:
-		rs = q.receive_messages()
-		for m in rs:
-			body = m.body
-			if body == "reset":
-				body = "emergency"
-			drone.apply_command(body)
-			m.delete()
+	try:
+		while not done:
+			rs = q.receive_messages()
+			for m in rs:
+				body = m.body
+				if body == "reset":
+					body = "emergency"
+				drone.apply_command(body)
+				m.delete()
+	except (KeyboardInterrupt, SystemExit):
+		drone.halt()
 
 if __name__ == '__main__':
 	main()
