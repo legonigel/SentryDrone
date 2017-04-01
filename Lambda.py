@@ -1,10 +1,4 @@
-#import urllib2
-import json
 import boto3
-#start added
-import boto
-from boto.s3.key import Key
-#end added
 
 def lambda_handler(event, context):
     
@@ -28,12 +22,10 @@ def sent_to_q(message):
 
 #start added
 def read_q():
-    c = boto.connect_s3()
-    b = c.get_bucket('cokecount')
-    k = Key(b)
-    k.key = 'count'
+    s3 = boto3.resource("s3")
+    s = s3.Object("cokecount", "count").get()["Body"].read()
     
-    return k.get_contents_as_string()
+    return s 
 #end added
 
 def on_session_started(session_started_request, session):
@@ -62,7 +54,7 @@ def on_intent(intent_request, session):
         raise ValueError("Invalid intent")
 
 def on_session_ended(session_ended_request, session):
-    print "Ending sehttps://cloudonaut.io/integrate-sqs-and-lambda-serverless-architecture-for-asynchronous-workloads/ssion."
+    print "Ending session."
     # Cleanup goes here...
 
 def handle_session_end_request():
@@ -88,9 +80,7 @@ def liftoff():
     reprompt_text = ""
     sent_to_q("liftoff")
     should_end_session = False
-
-   #response = urllib2.urlopen(API_BASE + "/status")
-    #bart_system_status = json.load(response)   
+   
     
     speech_output = "T minus 5 seconds to lift off "
 
@@ -101,28 +91,19 @@ def count():
     session_attributes = {}
     card_title = "Sentry Count"
     reprompt_text = ""
-    sent_to_q("count")
+    sent_to_q("count")
     should_end_session = False
 
-    #response = urllib2.urlopen(API_BASE + "/elevatorstatus")
-    #bart_elevator_status = json.load(response) 
-
-    speech_output = "Sentry beginning to count"
-    #start added
-    speech_output = read_q()
-    #end added
+    speech_output = "There are " + read_q() + " objects "
 
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
 def error():
     session_attributes = {}
     card_title = "Error"
-    reprompt_text = ""
+    reprompt_text = ""
     sent_to_q("error")
     should_end_session = False
-
-    #response = urllib2.urlopen(API_BASE + "/elevatorstatus")
-    #bart_elevator_status = json.load(response) 
 
     speech_output = "Please try again"
 
