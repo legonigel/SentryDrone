@@ -1,7 +1,13 @@
-import urllib2
+#import urllib2
 import json
+import boto3
+
+#field
+sqs = boto3.resource('sqs')
+queue = sqs.get_queue_by_name(QueueName='DroneQueue')
 
 def lambda_handler(event, context):
+
     if (event["session"]["application"]["applicationId"] !=
             "amzn1.ask.skill.c1a86732-9d3c-4d4e-84ed-fac474aea839"):
         raise ValueError("Invalid Application ID")
@@ -32,6 +38,8 @@ def on_intent(intent_request, session):
         return count()
     elif intent_name == "land":
         return land(intent)
+    elif intent_name == "error":
+            return error()
     elif intent_name == "AMAZON.HelpIntent":
         return get_welcome_response()
     elif intent_name == "AMAZON.CancelIntent" or intent_name == "AMAZON.StopIntent":
@@ -40,7 +48,7 @@ def on_intent(intent_request, session):
         raise ValueError("Invalid intent")
 
 def on_session_ended(session_ended_request, session):
-    print "Ending session."
+    print "Ending sehttps://cloudonaut.io/integrate-sqs-and-lambda-serverless-architecture-for-asynchronous-workloads/ssion."
     # Cleanup goes here...
 
 def handle_session_end_request():
@@ -64,6 +72,7 @@ def liftoff():
     session_attributes = {}
     card_title = "Lift off!"
     reprompt_text = ""
+    response = queue.send_message(MessageBody="Lift off")
     should_end_session = False
 
    #response = urllib2.urlopen(API_BASE + "/status")
@@ -78,6 +87,7 @@ def count():
     session_attributes = {}
     card_title = "Sentry Count"
     reprompt_text = ""
+    response = queue.send_message(MessageBody="Count"))
     should_end_session = False
 
     #response = urllib2.urlopen(API_BASE + "/elevatorstatus")
@@ -87,13 +97,29 @@ def count():
 
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
+def error():
+    session_attributes = {}
+    card_title = "Error"
+    reprompt_text = ""
+    response = queue.send_message(MessageBody="Error")
+    should_end_session = False
+
+    #response = urllib2.urlopen(API_BASE + "/elevatorstatus")
+    #bart_elevator_status = json.load(response) 
+
+    speech_output = "Please try again"
+
+    return build_response(session_attributes, build_speechlet_response(
+        card_title, speech_output, reprompt_text, should_end_session))
+
 
 def land(intent):
     session_attributes = {}
     card_title = "Sentry Landing"
     speech_output = "Fuck" \
                     "Please try again."
-    reprompt_text = "Error " 
+    reprompt_text = ""
+    response = queue.send_message(MessageBody="land")
     should_end_session = False
 
     return build_response(session_attributes, build_speechlet_response(
