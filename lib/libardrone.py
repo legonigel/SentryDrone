@@ -100,10 +100,10 @@ class ARDrone(object):
 		time.sleep(0.2)
 		self.set_max_bitrate(self.config_ids_string, "500")
 		time.sleep(0.2)
-		self.set_fps(self.config_ids_string, "30")
+		self.set_fps(self.config_ids_string, "15")
 		time.sleep(0.2)
 
-		self.set_video_codec(self.config_ids_string, 0x80)
+		self.set_video_codec(self.config_ids_string, 0x20)
 
 		self.last_command_is_hovering = True
 		self.com_pipe, com_pipe_other = multiprocessing.Pipe()
