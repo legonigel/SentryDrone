@@ -11,17 +11,21 @@ import time
 import boto
 from boto.s3.key import Key
 
+time.sleep(1)
+
+aws_upload = 0
+c = boto.connect_s3()
+b = c.get_bucket('cokecount')
+    
 #optional argument
 def nothing(x):
     pass
 
 # NOTE: Internet necessary for this part of code to work
 def pushToBucket(count):
-    c = boto.connect_s3()
-    b = c.get_bucket('cokecount') 
+    global b
     k = Key(b)
     k.key = 'count'
-    
     k.set_contents_from_string(str(count))
     
     #print "Bucket info: " + k.get_contents_as_string()
@@ -40,7 +44,7 @@ while(True):
     ret, frame = cam.read()
     if not ret:
         print "Trying again to read from camera..."
-        time.sleep(.1)
+        time.sleep(.01)
         continue
     
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -88,8 +92,11 @@ while(True):
                 cv2.circle(Gaussianframe, (int(x), int(y)), int(radius),(0, 255, 255), 2)
                 cv2.circle(Gaussianframe, center, 1, (0, 0, 255), -1)
     
-    #print "trying to push to bucket..."
-    pushToBucket(len(obj))
+    aws_upload+=1
+    if aws_upload % 20 == 0:
+        #print "trying to push to bucket..."
+        pushToBucket(len(obj))
+        aws_upload = 0
     cv2.imshow('image', res)
     cv2.imshow('blobs', Gaussianframe)
     #time.sleep(.1)
