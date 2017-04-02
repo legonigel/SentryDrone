@@ -13,8 +13,8 @@ from boto.s3.key import Key
 
 aws_upload = 0
     
-hl = 3
-hh = 5
+hl = 0
+hh = 9
 sl = 176
 sh = 240
 vl = 0
@@ -78,20 +78,23 @@ while(True):
         mask_r = cv2.inRange(hsv,rHSVLOW, rHSVHIGH)
         mask_b = cv2.inRange(hsv,bHSVLOW, bHSVHIGH)
         
-        mask_r = cv2.erode(mask_r, None, iterations=1)
-        mask_r = cv2.dilate(mask_r, None, iterations=5)
-        mask_b = cv2.erode(mask_b, None, iterations=1)
-        mask_b = cv2.dilate(mask_b, None, iterations=5)
+        #mask_r = cv2.erode(mask_r, None, iterations=1)
+        #mask_r = cv2.dilate(mask_r, None, iterations=5)
+        #mask_b = cv2.erode(mask_b, None, iterations=1)
+        #mask_b = cv2.dilate(mask_b, None, iterations=5)
         
         res_r = cv2.bitwise_and(Gaussianframe,Gaussianframe, mask =mask_r)
         res_b = cv2.bitwise_and(Gaussianframe,Gaussianframe, mask =mask_b)
         
         cnts = cv2.findContours(mask_r, cv2.RETR_EXTERNAL,
             cv2.CHAIN_APPROX_SIMPLE)[-2]
-            
+        
+        hull = [cv2.convexHull(cnt) for cnt in cnts]
+        cv2.polylines(Gaussianframe,hull,True,(0,0,255))
+        
         center = None
         
-        for c in cnts:
+        for c in hull:
             if len(c) > 3:
                 ((x, y), radius) = cv2.minEnclosingCircle(c)
                 
@@ -106,9 +109,12 @@ while(True):
         cnts = cv2.findContours(mask_b, cv2.RETR_EXTERNAL,
             cv2.CHAIN_APPROX_SIMPLE)[-2]
             
+        hull = [cv2.convexHull(cnt) for cnt in cnts]
+        cv2.polylines(Gaussianframe,hull,True,(0,0,255))
+        
         center = None
         
-        for c in cnts:
+        for c in hull:
             if len(c) > 3:
                 ((x, y), radius) = cv2.minEnclosingCircle(c)
                 
@@ -121,7 +127,7 @@ while(True):
                     cv2.circle(Gaussianframe, center, 1, (0, 0, 255), -1)
                     
         aws_upload+=1
-        if aws_upload % 20 == 0:
+        if aws_upload % 30 == 0:
             #print "trying to push to bucket..."
             pushToBucket(len(obj))
             aws_upload = 0
