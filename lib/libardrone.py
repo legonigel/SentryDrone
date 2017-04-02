@@ -225,7 +225,7 @@ class ARDrone(object):
 		self.at(at_led, 13,2,4)
 		self.at(at_anim, 3, 1000)
 
-	def event_turn arround(self):
+	def event_turnarround(self):
 		"""Make the drone turnarround."""
 		self.at(at_led, 13,2,4)
 		self.at(at_anim, 6, 5000)
