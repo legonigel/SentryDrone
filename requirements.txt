@@ -1,3 +1,5 @@
 numpy
 awscli
 opencv-python
+boto3
+boto
