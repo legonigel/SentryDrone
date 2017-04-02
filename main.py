@@ -23,13 +23,14 @@ def searchTarget(drone):
 		print "2"
 	
 def main():
+	print "Connecting to AWS"
 	sqs = boto3.resource('sqs', region_name="us-east-1")
 	q = sqs.get_queue_by_name(QueueName="DroneQueue")
 	try:
 		q.purge()
 	except:
 		pass
-		
+	print "Finished with AWS"
 
 	drone = lib.libardrone.ARDrone(True)
 	print "Connected to Drone"
