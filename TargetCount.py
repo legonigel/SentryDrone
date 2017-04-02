@@ -12,6 +12,8 @@ import boto
 from boto.s3.key import Key
 
 aws_upload = 0
+object_count = 0
+target_center = 0,0
     
 hl = 0
 hh = 9
@@ -40,14 +42,20 @@ def nothing(x):
     pass
 
 # NOTE: Internet necessary for this part of code to work
-def pushToBucket(count):
-    
+def pushToBucket():
+    global target_center, object_count
     c = boto.connect_s3()
     b = c.get_bucket('cokecount')
     k = Key(b)
     k.key = 'count'
-    k.set_contents_from_string(str(count))
+    k.set_contents_from_string(str(object_count))
     
+    b = c.get_bucket('targetxandydata')
+    k = Key(b)
+    k.key = 'x'
+    k.set_contents_from_string(str(target_center[1]))
+    k.key = 'y'
+    k.set_contents_from_string(str(target_center[0]))
     #print "Bucket info: " + k.get_contents_as_string()
 
 cam = cv2.VideoCapture('tcp://192.168.1.1:5555')
@@ -79,9 +87,9 @@ while(True):
         mask_b = cv2.inRange(hsv,bHSVLOW, bHSVHIGH)
         
         #mask_r = cv2.erode(mask_r, None, iterations=1)
-        #mask_r = cv2.dilate(mask_r, None, iterations=5)
+        mask_r = cv2.dilate(mask_r, None, iterations=3)
         #mask_b = cv2.erode(mask_b, None, iterations=1)
-        #mask_b = cv2.dilate(mask_b, None, iterations=5)
+        mask_b = cv2.dilate(mask_b, None, iterations=3)
         
         res_r = cv2.bitwise_and(Gaussianframe,Gaussianframe, mask =mask_r)
         res_b = cv2.bitwise_and(Gaussianframe,Gaussianframe, mask =mask_b)
@@ -101,7 +109,7 @@ while(True):
                 M = cv2.moments(c)
                 if not(M["m00"] == 0):
                     center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-                if cv2.contourArea(c) > 20 and radius > 100:
+                if cv2.contourArea(c) > 20 and radius > 60:
                     obj.append((x,y))
                     cv2.circle(Gaussianframe, (int(x), int(y)), int(radius),(0, 255, 255), 2)
                     cv2.circle(Gaussianframe, center, 1, (0, 0, 255), -1)
@@ -121,15 +129,18 @@ while(True):
                 M = cv2.moments(c)
                 if not(M["m00"] == 0):
                     center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-                if cv2.contourArea(c) > 20 and radius > 100:
+                if cv2.contourArea(c) > 20 and radius > 60:
                     obj.append((x,y))
                     cv2.circle(Gaussianframe, (int(x), int(y)), int(radius),(0, 255, 255), 2)
                     cv2.circle(Gaussianframe, center, 1, (0, 0, 255), -1)
-                    
+                    target_center = center
+        
+        object_count = len(obj)
+        
         aws_upload+=1
         if aws_upload % 30 == 0:
             #print "trying to push to bucket..."
-            pushToBucket(len(obj))
+            pushToBucket()
             aws_upload = 0
         cv2.imshow('image-r', res_r)
         cv2.imshow('image-b', res_b)
