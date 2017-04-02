@@ -15,12 +15,17 @@ def searchTarget(drone):
 	
 	error = 40
 	
-	if x < xMax/2 - error:
+	if x < (xMax/2 - error):
 		# need to turn right
-		print "1"
-	elif x > xMax/2 + error:
+		drone.turn_left(0.1)
+		return False
+	elif x > (xMax/2 + error):
 		# need to turn left
-		print "2"
+		drone.turn_left(0.1)
+		return False
+	else:
+		drone.hover()
+		return True
 	
 def main():
 	print "Connecting to AWS"
@@ -36,6 +41,7 @@ def main():
 	print "Connected to Drone"
 	drone.reset()
 	done = False
+	has_target = True
 	try:
 		while not done:
 			print ".",
@@ -47,12 +53,16 @@ def main():
 				if body == "reset":
 					body = "emergency"
 				print "Got command", body
-				if body == "search":
-					searchTarget(drone)
+				if body == "search" or not has_target:
+					has_target = searchTarget(drone)
 				elif body == "spin":
 					drone.event_turnarround()
 				elif body == "flip":
 					drone.event_flip()
+				elif body == "turn_left":
+					drone.turn_left(0.1)
+				elif body == "turn_right":
+					drone.turn_right(0.1)
 				else:
 					drone.apply_command(body)
 				m.delete()
