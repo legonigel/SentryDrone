@@ -225,7 +225,7 @@ class ARDrone(object):
 		self.at(at_led, 13,2,4)
 		self.at(at_anim, 3, 1000)
 
-	def event_turnarround(self):
+	def event_turn arround(self):
 		"""Make the drone turnarround."""
 		self.at(at_led, 13,2,4)
 		self.at(at_anim, 6, 5000)
@@ -245,6 +245,10 @@ class ARDrone(object):
 		self.at(at_led, 13,2,4)
 		self.at(at_anim, 14, 5000)
 
+	def event_flip(self):
+		"""Make the drone execute flip !"""
+		self.at(at_led, 13,2,4)
+		self.at(at_anim, 16, 5000)
 
 
 	def at(self, cmd, *args, **kwargs):
